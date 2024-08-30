@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { backend } from '../declarations/backend';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, CircularProgress } from '@mui/material';
@@ -32,6 +32,7 @@ const App: React.FC = () => {
   const [bets, setBets] = useState<{ [key: string]: number }>({});
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [showRules, setShowRules] = useState<boolean>(false);
+  const ballRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchBalance();
@@ -60,8 +61,20 @@ const App: React.FC = () => {
     fetchBalance();
   };
 
+  const spinBall = () => {
+    if (ballRef.current) {
+      ballRef.current.classList.add('spinning');
+      setTimeout(() => {
+        if (ballRef.current) {
+          ballRef.current.classList.remove('spinning');
+        }
+      }, 8000);
+    }
+  };
+
   const spin = async () => {
     setIsSpinning(true);
+    spinBall();
     const result = await backend.spin();
     setLastSpinResult(Number(result.ok));
     setBets({});
@@ -83,7 +96,7 @@ const App: React.FC = () => {
               key={number}
               className={`number-slot ${number === 0 ? 'green' : (redNumbers.includes(number) ? 'red' : 'black')}`}
               style={{
-                transform: `translate(${x}px, ${y}px) rotate(${angle + 90}deg)`,
+                transform: `translate(${x}px, ${y}px) rotate(${angle}deg)`,
                 transformOrigin: 'center bottom',
               }}
             >
@@ -91,6 +104,7 @@ const App: React.FC = () => {
             </div>
           );
         })}
+        <div ref={ballRef} className="ball"></div>
       </div>
     );
   };
@@ -130,7 +144,6 @@ const App: React.FC = () => {
           <div className="balance-display">Balance: ${balance}</div>
           <div className="wheel-container">
             {renderWheel()}
-            <div className="ball"></div>
             <div id="winning-number">{lastSpinResult !== null ? lastSpinResult : ''}</div>
           </div>
           <div id="result">
