@@ -18,11 +18,12 @@ const theme = createTheme({
 });
 
 const wheelNumbers = [
-  0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27,
-  13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33,
-  1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12,
-  35, 3, 26
+  0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36,
+  11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9,
+  22, 18, 29, 7, 28, 12, 35, 3, 26
 ];
+
+const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
 
 const App: React.FC = () => {
   const [balance, setBalance] = useState<number>(0);
@@ -77,7 +78,7 @@ const App: React.FC = () => {
           return (
             <div
               key={number}
-              className={`number-slot ${number === 0 ? 'green' : (number % 2 === 0 ? 'black' : 'red')}`}
+              className={`number-slot ${number === 0 ? 'green' : (redNumbers.includes(number) ? 'red' : 'black')}`}
               style={{ transform: `rotate(${angle}deg)` }}
             >
               {number}
@@ -96,7 +97,7 @@ const App: React.FC = () => {
         {numbers.map(number => (
           <div
             key={number}
-            className={`bet-box ${number % 2 === 0 ? 'black' : 'red'}`}
+            className={`bet-box ${redNumbers.includes(number) ? 'red' : 'black'}`}
             onClick={() => placeBet(number.toString())}
           >
             {number}
