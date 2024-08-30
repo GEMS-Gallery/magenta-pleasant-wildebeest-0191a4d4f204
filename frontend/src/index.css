@@ -65,7 +65,7 @@ body, html {
   );
   position: relative;
   overflow: hidden;
-  transition: transform 8s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
@@ -89,27 +89,27 @@ body, html {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: transform 8s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
   z-index: 3;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 @keyframes spinWheel {
   0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  100% { transform: rotate(720deg); }
 }
 
 @keyframes spinBall {
   0% { transform: rotate(0deg) translateY(-120px) rotate(0deg); }
-  100% { transform: rotate(360deg) translateY(-120px) rotate(-360deg); }
+  100% { transform: rotate(720deg) translateY(-120px) rotate(-720deg); }
 }
 
 .wheel.spinning {
-  animation: spinWheel 8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  animation: spinWheel 4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 .ball.spinning {
-  animation: spinBall 8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  animation: spinBall 4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 #winning-number {

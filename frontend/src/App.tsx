@@ -65,7 +65,7 @@ const App: React.FC = () => {
           wheelRef.current.classList.remove('spinning');
           ballRef.current.classList.remove('spinning');
         }
-      }, 8000);
+      }, 4000);
     }
   };
 
@@ -73,12 +73,13 @@ const App: React.FC = () => {
     setIsSpinning(true);
     spinWheel();
     const result = await backend.spin();
-    setLastSpinResult(Number(result.ok));
-    setBets({});
-    fetchBalance();
+    const winningNumber = Number(result.ok);
     setTimeout(() => {
+      setLastSpinResult(winningNumber);
+      setBets({});
+      fetchBalance();
       setIsSpinning(false);
-    }, 8000);
+    }, 4000);
   };
 
   const renderWheel = () => {
