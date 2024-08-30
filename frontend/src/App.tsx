@@ -64,7 +64,7 @@ const App: React.FC = () => {
     const newBets = { ...bets };
     newBets[betType] = (newBets[betType] || 0) + amount;
     setBets(newBets);
-    setChipPositions([...chipPositions, { betType, amount, x, y }]);
+    setChipPositions(prevPositions => [...prevPositions, { betType, amount, x, y }]);
   };
 
   const handleChipDrag = (e: React.DragEvent<HTMLDivElement>, chipValue: number) => {
