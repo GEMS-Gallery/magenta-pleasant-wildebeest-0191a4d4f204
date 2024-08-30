@@ -17,12 +17,6 @@ const theme = createTheme({
   },
 });
 
-const wheelNumbers = [
-  0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36,
-  11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9,
-  22, 18, 29, 7, 28, 12, 35, 3, 26
-];
-
 const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
 
 const App: React.FC = () => {
@@ -32,6 +26,7 @@ const App: React.FC = () => {
   const [bets, setBets] = useState<{ [key: string]: number }>({});
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [showRules, setShowRules] = useState<boolean>(false);
+  const wheelRef = useRef<HTMLDivElement>(null);
   const ballRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,11 +56,13 @@ const App: React.FC = () => {
     fetchBalance();
   };
 
-  const spinBall = () => {
-    if (ballRef.current) {
+  const spinWheel = () => {
+    if (wheelRef.current && ballRef.current) {
+      wheelRef.current.classList.add('spinning');
       ballRef.current.classList.add('spinning');
       setTimeout(() => {
-        if (ballRef.current) {
+        if (wheelRef.current && ballRef.current) {
+          wheelRef.current.classList.remove('spinning');
           ballRef.current.classList.remove('spinning');
         }
       }, 8000);
@@ -74,36 +71,20 @@ const App: React.FC = () => {
 
   const spin = async () => {
     setIsSpinning(true);
-    spinBall();
+    spinWheel();
     const result = await backend.spin();
     setLastSpinResult(Number(result.ok));
     setBets({});
     fetchBalance();
-    setIsSpinning(false);
+    setTimeout(() => {
+      setIsSpinning(false);
+    }, 8000);
   };
 
   const renderWheel = () => {
     return (
-      <div className="wheel">
+      <div className="wheel" ref={wheelRef}>
         <div className="wheel-inner"></div>
-        {wheelNumbers.map((number, index) => {
-          const angle = index * (360 / 37);
-          const radians = angle * (Math.PI / 180);
-          const x = Math.cos(radians) * 180;
-          const y = Math.sin(radians) * 180;
-          return (
-            <div
-              key={number}
-              className={`number-slot ${number === 0 ? 'green' : (redNumbers.includes(number) ? 'red' : 'black')}`}
-              style={{
-                transform: `translate(${x}px, ${y}px) rotate(${angle}deg)`,
-                transformOrigin: 'center bottom',
-              }}
-            >
-              {number}
-            </div>
-          );
-        })}
         <div ref={ballRef} className="ball"></div>
       </div>
     );
@@ -136,6 +117,11 @@ const App: React.FC = () => {
     );
   };
 
+  const getResultColor = (number: number) => {
+    if (number === 0) return 'green';
+    return redNumbers.includes(number) ? 'red' : 'black';
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -144,10 +130,15 @@ const App: React.FC = () => {
           <div className="balance-display">Balance: ${balance}</div>
           <div className="wheel-container">
             {renderWheel()}
-            <div id="winning-number">{lastSpinResult !== null ? lastSpinResult : ''}</div>
           </div>
           <div id="result">
-            {isSpinning ? <CircularProgress /> : lastSpinResult !== null ? `Last spin: ${lastSpinResult}` : ''}
+            {isSpinning ? (
+              <CircularProgress />
+            ) : lastSpinResult !== null ? (
+              `Last spin: ${lastSpinResult} (${getResultColor(lastSpinResult)})`
+            ) : (
+              ''
+            )}
           </div>
         </div>
         <div className="betting-area">

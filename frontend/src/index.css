@@ -41,8 +41,8 @@ body, html {
 }
 
 .wheel-container {
-  width: 400px;
-  height: 400px;
+  width: 300px;
+  height: 300px;
   position: relative;
   perspective: 1000px;
 }
@@ -51,7 +51,18 @@ body, html {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background-color: #1a1a2e;
+  background: conic-gradient(
+    #b30000,
+    #000000,
+    #b30000,
+    #000000,
+    #b30000,
+    #000000,
+    #b30000,
+    #000000,
+    #b30000,
+    #000000
+  );
   position: relative;
   overflow: hidden;
   transition: transform 8s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -69,38 +80,6 @@ body, html {
   z-index: 2;
 }
 
-.number-slot {
-  position: absolute;
-  width: 30px;
-  height: 60px;
-  transform-origin: bottom center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-  font-weight: bold;
-  color: #fff;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-  border-top: 2px solid #fff;
-  box-sizing: border-box;
-}
-
-.number-slot::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: inherit;
-  filter: brightness(0.8);
-  z-index: -1;
-}
-
-.red { background-color: #b30000; }
-.black { background-color: #000; }
-.green { background-color: #016d29; }
-
 .ball {
   width: 15px;
   height: 15px;
@@ -115,9 +94,18 @@ body, html {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
+@keyframes spinWheel {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @keyframes spinBall {
-  0% { transform: rotate(0deg) translateY(-180px) rotate(0deg); }
-  100% { transform: rotate(360deg) translateY(-180px) rotate(-360deg); }
+  0% { transform: rotate(0deg) translateY(-120px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateY(-120px) rotate(-360deg); }
+}
+
+.wheel.spinning {
+  animation: spinWheel 8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 .ball.spinning {
