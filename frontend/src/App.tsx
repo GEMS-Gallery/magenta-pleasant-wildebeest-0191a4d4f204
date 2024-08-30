@@ -74,10 +74,14 @@ const App: React.FC = () => {
   const handleChipDrop = (e: React.DragEvent<HTMLDivElement>, betType: string) => {
     e.preventDefault();
     const chipValue = Number(e.dataTransfer.getData('text'));
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    placeBet(betType, chipValue, x, y);
+    const tableRect = tableRef.current?.getBoundingClientRect();
+    const dropRect = e.currentTarget.getBoundingClientRect();
+    
+    if (tableRect) {
+      const x = e.clientX - tableRect.left;
+      const y = e.clientY - tableRect.top;
+      placeBet(betType, chipValue, x, y);
+    }
   };
 
   const spinWheel = () => {
