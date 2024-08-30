@@ -137,6 +137,7 @@ body, html {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
 .bet-box {
@@ -206,6 +207,7 @@ body, html {
   cursor: move;
   user-select: none;
   z-index: 10;
+  transition: all 0.3s ease;
 }
 
 .chip-1 { background: linear-gradient(135deg, #ff4d4d, #cc0000); }
@@ -296,3 +298,9 @@ body, html {
 .spin-history .red { color: #ff4d4d; }
 .spin-history .black { color: #333333; }
 .spin-history .green { color: #00cc00; }
+
+.chip-on-table {
+  position: absolute;
+  z-index: 20;
+  transition: all 0.3s ease;
+}

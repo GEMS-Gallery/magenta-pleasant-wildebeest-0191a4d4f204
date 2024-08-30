@@ -19,11 +19,19 @@ const theme = createTheme({
 
 const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
 
+interface ChipPosition {
+  betType: string;
+  amount: number;
+  x: number;
+  y: number;
+}
+
 const App: React.FC = () => {
   const [balance, setBalance] = useState<number>(0);
   const [lastSpinResult, setLastSpinResult] = useState<number | null>(null);
   const [selectedChip, setSelectedChip] = useState<number>(1);
   const [bets, setBets] = useState<{ [key: string]: number }>({});
+  const [chipPositions, setChipPositions] = useState<ChipPosition[]>([]);
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [showRules, setShowRules] = useState<boolean>(false);
   const [spinHistory, setSpinHistory] = useState<number[]>([]);
@@ -52,10 +60,11 @@ const App: React.FC = () => {
     setSpinHistory(history.map(Number));
   };
 
-  const placeBet = (betType: string, amount: number) => {
+  const placeBet = (betType: string, amount: number, x: number, y: number) => {
     const newBets = { ...bets };
     newBets[betType] = (newBets[betType] || 0) + amount;
     setBets(newBets);
+    setChipPositions([...chipPositions, { betType, amount, x, y }]);
   };
 
   const handleChipDrag = (e: React.DragEvent<HTMLDivElement>, chipValue: number) => {
@@ -65,7 +74,10 @@ const App: React.FC = () => {
   const handleChipDrop = (e: React.DragEvent<HTMLDivElement>, betType: string) => {
     e.preventDefault();
     const chipValue = Number(e.dataTransfer.getData('text'));
-    placeBet(betType, chipValue);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    placeBet(betType, chipValue, x, y);
   };
 
   const spinWheel = () => {
@@ -98,6 +110,7 @@ const App: React.FC = () => {
         setLastSpinResult(winningNumber);
         setSpinHistory(prevHistory => [winningNumber, ...prevHistory.slice(0, 9)]);
         setBets({});
+        setChipPositions([]);
         fetchBalance();
         setIsSpinning(false);
       }, 4000);
@@ -144,6 +157,15 @@ const App: React.FC = () => {
         <div className="bet-box half black" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, 'black')}>Black</div>
         <div className="bet-box half" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, 'odd')}>Odd</div>
         <div className="bet-box half" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, '19-36')}>19-36</div>
+        {chipPositions.map((chip, index) => (
+          <div
+            key={index}
+            className={`chip chip-${chip.amount} chip-on-table`}
+            style={{ left: `${chip.x}px`, top: `${chip.y}px` }}
+          >
+            ${chip.amount}
+          </div>
+        ))}
       </div>
     );
   };
