@@ -1,0 +1,16 @@
+type Result_1 = 
+ variant {
+   err: text;
+   ok;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: nat;
+ };
+service : {
+  getBalance: () -> (nat) query;
+  getLastSpinResult: () -> (opt nat) query;
+  placeBet: (text, nat) -> (Result_1);
+  spin: () -> (Result);
+}
