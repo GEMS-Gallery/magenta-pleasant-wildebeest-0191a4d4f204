@@ -74,12 +74,18 @@ const App: React.FC = () => {
       <div className="wheel">
         <div className="wheel-inner"></div>
         {wheelNumbers.map((number, index) => {
-          const angle = index * 360 / 37;
+          const angle = index * (360 / 37);
+          const radians = angle * (Math.PI / 180);
+          const x = Math.cos(radians) * 180;
+          const y = Math.sin(radians) * 180;
           return (
             <div
               key={number}
               className={`number-slot ${number === 0 ? 'green' : (redNumbers.includes(number) ? 'red' : 'black')}`}
-              style={{ transform: `rotate(${angle}deg)` }}
+              style={{
+                transform: `translate(${x}px, ${y}px) rotate(${angle + 90}deg)`,
+                transformOrigin: 'center bottom',
+              }}
             >
               {number}
             </div>
