@@ -17,6 +17,13 @@ const theme = createTheme({
   },
 });
 
+const wheelNumbers = [
+  0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27,
+  13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33,
+  1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12,
+  35, 3, 26
+];
+
 const App: React.FC = () => {
   const [balance, setBalance] = useState<number>(0);
   const [lastSpinResult, setLastSpinResult] = useState<number | null>(null);
@@ -62,13 +69,50 @@ const App: React.FC = () => {
   };
 
   const renderWheel = () => {
-    // Implement wheel rendering logic here
-    return <div className="wheel"></div>;
+    return (
+      <div className="wheel">
+        <div className="wheel-inner"></div>
+        {wheelNumbers.map((number, index) => {
+          const angle = index * 360 / 37;
+          return (
+            <div
+              key={number}
+              className={`number-slot ${number === 0 ? 'green' : (number % 2 === 0 ? 'black' : 'red')}`}
+              style={{ transform: `rotate(${angle}deg)` }}
+            >
+              {number}
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   const renderBettingGrid = () => {
-    // Implement betting grid rendering logic here
-    return <div className="betting-grid"></div>;
+    const numbers = Array.from({ length: 36 }, (_, i) => i + 1);
+    return (
+      <div className="betting-grid">
+        <div className="bet-box green" onClick={() => placeBet('0')}>0</div>
+        {numbers.map(number => (
+          <div
+            key={number}
+            className={`bet-box ${number % 2 === 0 ? 'black' : 'red'}`}
+            onClick={() => placeBet(number.toString())}
+          >
+            {number}
+          </div>
+        ))}
+        <div className="bet-box" onClick={() => placeBet('1st12')}>1st 12</div>
+        <div className="bet-box" onClick={() => placeBet('2nd12')}>2nd 12</div>
+        <div className="bet-box" onClick={() => placeBet('3rd12')}>3rd 12</div>
+        <div className="bet-box" onClick={() => placeBet('1-18')}>1-18</div>
+        <div className="bet-box" onClick={() => placeBet('even')}>Even</div>
+        <div className="bet-box red" onClick={() => placeBet('red')}>Red</div>
+        <div className="bet-box black" onClick={() => placeBet('black')}>Black</div>
+        <div className="bet-box" onClick={() => placeBet('odd')}>Odd</div>
+        <div className="bet-box" onClick={() => placeBet('19-36')}>19-36</div>
+      </div>
+    );
   };
 
   return (
