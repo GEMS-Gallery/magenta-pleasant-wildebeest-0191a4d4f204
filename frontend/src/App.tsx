@@ -29,6 +29,7 @@ const App: React.FC = () => {
   const [spinHistory, setSpinHistory] = useState<number[]>([]);
   const wheelRef = useRef<HTMLDivElement>(null);
   const ballRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchBalance();
@@ -51,16 +52,20 @@ const App: React.FC = () => {
     setSpinHistory(history.map(Number));
   };
 
-  const placeBet = async (betType: string) => {
-    if (balance < selectedChip) {
-      alert('Insufficient balance');
-      return;
-    }
+  const placeBet = (betType: string, amount: number) => {
     const newBets = { ...bets };
-    newBets[betType] = (newBets[betType] || 0) + selectedChip;
+    newBets[betType] = (newBets[betType] || 0) + amount;
     setBets(newBets);
-    await backend.placeBet(betType, BigInt(selectedChip));
-    fetchBalance();
+  };
+
+  const handleChipDrag = (e: React.DragEvent<HTMLDivElement>, chipValue: number) => {
+    e.dataTransfer.setData('text/plain', chipValue.toString());
+  };
+
+  const handleChipDrop = (e: React.DragEvent<HTMLDivElement>, betType: string) => {
+    e.preventDefault();
+    const chipValue = Number(e.dataTransfer.getData('text'));
+    placeBet(betType, chipValue);
   };
 
   const spinWheel = () => {
@@ -77,17 +82,30 @@ const App: React.FC = () => {
   };
 
   const spin = async () => {
+    if (Object.keys(bets).length === 0) {
+      alert('Please place a bet before spinning.');
+      return;
+    }
+
     setIsSpinning(true);
     spinWheel();
-    const result = await backend.spin();
-    const winningNumber = Number(result.ok);
-    setTimeout(() => {
-      setLastSpinResult(winningNumber);
-      setSpinHistory(prevHistory => [winningNumber, ...prevHistory.slice(0, 9)]);
-      setBets({});
-      fetchBalance();
+
+    try {
+      await backend.placeMultipleBets(Object.entries(bets).map(([betType, amount]) => [betType, BigInt(amount)]));
+      const result = await backend.spin();
+      const winningNumber = Number(result.ok);
+      setTimeout(() => {
+        setLastSpinResult(winningNumber);
+        setSpinHistory(prevHistory => [winningNumber, ...prevHistory.slice(0, 9)]);
+        setBets({});
+        fetchBalance();
+        setIsSpinning(false);
+      }, 4000);
+    } catch (error) {
+      console.error('Error during spin:', error);
       setIsSpinning(false);
-    }, 4000);
+      alert('An error occurred while spinning. Please try again.');
+    }
   };
 
   const renderWheel = () => {
@@ -99,29 +117,33 @@ const App: React.FC = () => {
     );
   };
 
-  const renderBettingGrid = () => {
+  const renderBettingTable = () => {
     const numbers = Array.from({ length: 36 }, (_, i) => i + 1);
     return (
-      <div className="betting-grid">
-        <div className="bet-box green" onClick={() => placeBet('0')}>0</div>
+      <div className="roulette-table" ref={tableRef}>
+        <div className="bet-box green" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, '0')}>0</div>
         {numbers.map(number => (
           <div
             key={number}
             className={`bet-box ${redNumbers.includes(number) ? 'red' : 'black'}`}
-            onClick={() => placeBet(number.toString())}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => handleChipDrop(e, number.toString())}
           >
             {number}
           </div>
         ))}
-        <div className="bet-box" onClick={() => placeBet('1st12')}>1st 12</div>
-        <div className="bet-box" onClick={() => placeBet('2nd12')}>2nd 12</div>
-        <div className="bet-box" onClick={() => placeBet('3rd12')}>3rd 12</div>
-        <div className="bet-box" onClick={() => placeBet('1-18')}>1-18</div>
-        <div className="bet-box" onClick={() => placeBet('even')}>Even</div>
-        <div className="bet-box red" onClick={() => placeBet('red')}>Red</div>
-        <div className="bet-box black" onClick={() => placeBet('black')}>Black</div>
-        <div className="bet-box" onClick={() => placeBet('odd')}>Odd</div>
-        <div className="bet-box" onClick={() => placeBet('19-36')}>19-36</div>
+        <div className="bet-box dozen" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, '1st12')}>1st 12</div>
+        <div className="bet-box dozen" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, '2nd12')}>2nd 12</div>
+        <div className="bet-box dozen" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, '3rd12')}>3rd 12</div>
+        <div className="bet-box column" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, '2to1_first')}>2 to 1</div>
+        <div className="bet-box column" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, '2to1_second')}>2 to 1</div>
+        <div className="bet-box column" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, '2to1_third')}>2 to 1</div>
+        <div className="bet-box half" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, '1-18')}>1-18</div>
+        <div className="bet-box half" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, 'even')}>Even</div>
+        <div className="bet-box half red" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, 'red')}>Red</div>
+        <div className="bet-box half black" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, 'black')}>Black</div>
+        <div className="bet-box half" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, 'odd')}>Odd</div>
+        <div className="bet-box half" onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleChipDrop(e, '19-36')}>19-36</div>
       </div>
     );
   };
@@ -167,16 +189,17 @@ const App: React.FC = () => {
           {renderSpinHistory()}
         </div>
         <div className="betting-area">
-          {renderBettingGrid()}
+          {renderBettingTable()}
           <div className="chip-rack">
             {[1, 5, 10, 25, 100].map((value) => (
               <div key={value} className="chip-stack">
-                <button
-                  className={`chip-button chip-${value}`}
-                  onClick={() => setSelectedChip(value)}
+                <div
+                  className={`chip chip-${value}`}
+                  draggable
+                  onDragStart={(e) => handleChipDrag(e, value)}
                 >
                   ${value}
-                </button>
+                </div>
               </div>
             ))}
           </div>

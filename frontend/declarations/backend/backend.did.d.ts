@@ -11,6 +11,7 @@ export interface _SERVICE {
   'getLastSpinResult' : ActorMethod<[], [] | [bigint]>,
   'getSpinHistory' : ActorMethod<[], Array<bigint>>,
   'placeBet' : ActorMethod<[string, bigint], Result_1>,
+  'placeMultipleBets' : ActorMethod<[Array<[string, bigint]>], Result_1>,
   'spin' : ActorMethod<[], Result>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

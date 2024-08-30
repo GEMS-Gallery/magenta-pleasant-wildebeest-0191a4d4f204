@@ -1,5 +1,4 @@
 import Bool "mo:base/Bool";
-import Text "mo:base/Text";
 
 import Int "mo:base/Int";
 import Nat "mo:base/Nat";
@@ -9,6 +8,7 @@ import Result "mo:base/Result";
 import Random "mo:base/Random";
 import Time "mo:base/Time";
 import List "mo:base/List";
+import Text "mo:base/Text";
 
 actor Roulette {
   // Stable variables
@@ -39,6 +39,20 @@ actor Roulette {
     #ok();
   };
 
+  // Place multiple bets
+  public shared func placeMultipleBets(newBets: [(Text, Nat)]) : async Result.Result<(), Text> {
+    var totalBetAmount = 0;
+    for ((_, amount) in newBets.vals()) {
+      totalBetAmount += amount;
+    };
+    if (totalBetAmount > userBalance) {
+      return #err("Insufficient balance");
+    };
+    bets := Array.append(bets, newBets);
+    userBalance -= totalBetAmount;
+    #ok();
+  };
+
   // Spin the wheel
   public shared func spin() : async Result.Result<Nat, Text> {
     let winningNumber = await generateRandomNumber();
@@ -64,12 +78,18 @@ actor Roulette {
   private func calculateWinnings(betType: Text, amount: Nat, winningNumber: Nat) : Nat {
     switch (betType) {
       case ("straight") {
-        if (Nat.toText(winningNumber) == betType) {
+        if (Text.equal(Nat.toText(winningNumber), betType)) {
           amount * 35
         } else {
           0
         };
       };
+      case ("split") { amount * 17 };
+      case ("street") { amount * 11 };
+      case ("corner") { amount * 8 };
+      case ("sixline") { amount * 5 };
+      case ("dozen") { amount * 2 };
+      case ("column") { amount * 2 };
       case ("red") {
         if (isRed(winningNumber)) {
           amount * 2

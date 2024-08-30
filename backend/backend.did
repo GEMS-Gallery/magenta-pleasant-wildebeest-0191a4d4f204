@@ -13,5 +13,9 @@ service : {
   getLastSpinResult: () -> (opt nat) query;
   getSpinHistory: () -> (vec nat) query;
   placeBet: (text, nat) -> (Result_1);
+  placeMultipleBets: (vec record {
+                            text;
+                            nat;
+                          }) -> (Result_1);
   spin: () -> (Result);
 }

@@ -6,6 +6,11 @@ export const idlFactory = ({ IDL }) => {
     'getLastSpinResult' : IDL.Func([], [IDL.Opt(IDL.Nat)], ['query']),
     'getSpinHistory' : IDL.Func([], [IDL.Vec(IDL.Nat)], ['query']),
     'placeBet' : IDL.Func([IDL.Text, IDL.Nat], [Result_1], []),
+    'placeMultipleBets' : IDL.Func(
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat))],
+        [Result_1],
+        [],
+      ),
     'spin' : IDL.Func([], [Result], []),
   });
 };

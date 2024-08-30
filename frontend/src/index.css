@@ -129,11 +129,11 @@ body, html {
   gap: 20px;
 }
 
-.betting-grid {
+.roulette-table {
   display: grid;
   grid-template-columns: repeat(14, 1fr);
   gap: 2px;
-  background: linear-gradient(135deg, #0a4d3c 0%, #0d6e52 100%);
+  background: #0a4d3c;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -161,6 +161,10 @@ body, html {
 .bet-box.red { background: linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%); }
 .bet-box.black { background: linear-gradient(135deg, #333333 0%, #000000 100%); color: #fff; }
 .bet-box.green { background: linear-gradient(135deg, #00cc00 0%, #009900 100%); }
+
+.bet-box.dozen { grid-column: span 4; }
+.bet-box.column { grid-row: span 4; }
+.bet-box.half { grid-column: span 2; }
 
 #spinButton {
   margin-top: 20px;
