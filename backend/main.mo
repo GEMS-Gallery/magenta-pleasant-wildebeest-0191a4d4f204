@@ -8,11 +8,13 @@ import Array "mo:base/Array";
 import Result "mo:base/Result";
 import Random "mo:base/Random";
 import Time "mo:base/Time";
+import List "mo:base/List";
 
 actor Roulette {
   // Stable variables
   stable var userBalance: Nat = 1000;
   stable var lastSpinResult: ?Nat = null;
+  stable var spinHistory: List.List<Nat> = List.nil();
 
   // Mutable variable
   var bets: [(Text, Nat)] = [];
@@ -41,6 +43,10 @@ actor Roulette {
   public shared func spin() : async Result.Result<Nat, Text> {
     let winningNumber = await generateRandomNumber();
     lastSpinResult := ?winningNumber;
+    spinHistory := List.push(winningNumber, spinHistory);
+    if (List.size(spinHistory) > 10) {
+      spinHistory := List.take(spinHistory, 10);
+    };
 
     // Calculate winnings
     for ((betType, amount) in bets.vals()) {
@@ -115,5 +121,10 @@ actor Roulette {
   // Get last spin result
   public query func getLastSpinResult() : async ?Nat {
     lastSpinResult;
+  };
+
+  // Get spin history
+  public query func getSpinHistory() : async [Nat] {
+    List.toArray(spinHistory);
   };
 };

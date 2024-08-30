@@ -11,6 +11,7 @@ type Result =
 service : {
   getBalance: () -> (nat) query;
   getLastSpinResult: () -> (opt nat) query;
+  getSpinHistory: () -> (vec nat) query;
   placeBet: (text, nat) -> (Result_1);
   spin: () -> (Result);
 }

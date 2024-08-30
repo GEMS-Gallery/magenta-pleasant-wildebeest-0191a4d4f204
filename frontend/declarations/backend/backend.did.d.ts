@@ -9,6 +9,7 @@ export type Result_1 = { 'ok' : null } |
 export interface _SERVICE {
   'getBalance' : ActorMethod<[], bigint>,
   'getLastSpinResult' : ActorMethod<[], [] | [bigint]>,
+  'getSpinHistory' : ActorMethod<[], Array<bigint>>,
   'placeBet' : ActorMethod<[string, bigint], Result_1>,
   'spin' : ActorMethod<[], Result>,
 }

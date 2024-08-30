@@ -26,12 +26,14 @@ const App: React.FC = () => {
   const [bets, setBets] = useState<{ [key: string]: number }>({});
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [showRules, setShowRules] = useState<boolean>(false);
+  const [spinHistory, setSpinHistory] = useState<number[]>([]);
   const wheelRef = useRef<HTMLDivElement>(null);
   const ballRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchBalance();
     fetchLastSpinResult();
+    fetchSpinHistory();
   }, []);
 
   const fetchBalance = async () => {
@@ -42,6 +44,11 @@ const App: React.FC = () => {
   const fetchLastSpinResult = async () => {
     const result = await backend.getLastSpinResult();
     setLastSpinResult(result[0] !== null ? Number(result[0]) : null);
+  };
+
+  const fetchSpinHistory = async () => {
+    const history = await backend.getSpinHistory();
+    setSpinHistory(history.map(Number));
   };
 
   const placeBet = async (betType: string) => {
@@ -76,6 +83,7 @@ const App: React.FC = () => {
     const winningNumber = Number(result.ok);
     setTimeout(() => {
       setLastSpinResult(winningNumber);
+      setSpinHistory(prevHistory => [winningNumber, ...prevHistory.slice(0, 9)]);
       setBets({});
       fetchBalance();
       setIsSpinning(false);
@@ -123,6 +131,21 @@ const App: React.FC = () => {
     return redNumbers.includes(number) ? 'red' : 'black';
   };
 
+  const renderSpinHistory = () => {
+    return (
+      <div className="spin-history">
+        <h3>Spin History</h3>
+        <ul>
+          {spinHistory.map((number, index) => (
+            <li key={index} className={getResultColor(number)}>
+              {number} ({getResultColor(number)})
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -141,6 +164,7 @@ const App: React.FC = () => {
               ''
             )}
           </div>
+          {renderSpinHistory()}
         </div>
         <div className="betting-area">
           {renderBettingGrid()}

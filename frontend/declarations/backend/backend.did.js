@@ -4,6 +4,7 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'getBalance' : IDL.Func([], [IDL.Nat], ['query']),
     'getLastSpinResult' : IDL.Func([], [IDL.Opt(IDL.Nat)], ['query']),
+    'getSpinHistory' : IDL.Func([], [IDL.Vec(IDL.Nat)], ['query']),
     'placeBet' : IDL.Func([IDL.Text, IDL.Nat], [Result_1], []),
     'spin' : IDL.Func([], [Result], []),
   });

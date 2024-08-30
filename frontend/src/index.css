@@ -263,3 +263,32 @@ body, html {
   padding: 2px 5px;
   border-radius: 3px;
 }
+
+.spin-history {
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.spin-history h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.spin-history ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.spin-history li {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.spin-history .red { color: #ff4d4d; }
+.spin-history .black { color: #333333; }
+.spin-history .green { color: #00cc00; }
