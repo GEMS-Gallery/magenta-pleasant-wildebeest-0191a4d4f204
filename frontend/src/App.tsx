@@ -35,6 +35,7 @@ const App: React.FC = () => {
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [showRules, setShowRules] = useState<boolean>(false);
   const [spinHistory, setSpinHistory] = useState<number[]>([]);
+  const [randomNumber, setRandomNumber] = useState<number | null>(null);
   const wheelRef = useRef<HTMLDivElement>(null);
   const ballRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -97,6 +98,19 @@ const App: React.FC = () => {
     }
   };
 
+  const simulateRandomNumberGeneration = () => {
+    let count = 0;
+    const interval = setInterval(() => {
+      const randomNum = Math.floor(Math.random() * 37);
+      setRandomNumber(randomNum);
+      count++;
+      if (count >= 20) {
+        clearInterval(interval);
+        setRandomNumber(null);
+      }
+    }, 100);
+  };
+
   const spin = async () => {
     if (Object.keys(bets).length === 0) {
       alert('Please place a bet before spinning.');
@@ -105,6 +119,7 @@ const App: React.FC = () => {
 
     setIsSpinning(true);
     spinWheel();
+    simulateRandomNumberGeneration();
 
     try {
       await backend.placeMultipleBets(Object.entries(bets).map(([betType, amount]) => [betType, BigInt(amount)]));
@@ -117,6 +132,7 @@ const App: React.FC = () => {
         setChipPositions([]);
         fetchBalance();
         setIsSpinning(false);
+        setRandomNumber(winningNumber);
       }, 4000);
     } catch (error) {
       console.error('Error during spin:', error);
@@ -130,6 +146,11 @@ const App: React.FC = () => {
       <div className="wheel" ref={wheelRef}>
         <div className="wheel-inner"></div>
         <div ref={ballRef} className="ball"></div>
+        {randomNumber !== null && (
+          <div className="random-number-display" style={{ color: getResultColor(randomNumber) }}>
+            {randomNumber}
+          </div>
+        )}
       </div>
     );
   };
