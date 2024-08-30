@@ -101,7 +101,7 @@ const App: React.FC = () => {
   const simulateRandomNumberGeneration = () => {
     let count = 0;
     const interval = setInterval(() => {
-      const randomNum = Math.floor(Math.random() * 37);
+      const randomNum = Math.floor(Math.random() * 37); // Generates a number between 0 and 36
       setRandomNumber(randomNum);
       count++;
       if (count >= 20) {
@@ -148,7 +148,7 @@ const App: React.FC = () => {
         <div ref={ballRef} className="ball"></div>
         {randomNumber !== null && (
           <div className="random-number-display" style={{ color: getResultColor(randomNumber) }}>
-            {randomNumber}
+            {randomNumber.toString().padStart(2, '0')}
           </div>
         )}
       </div>
@@ -207,7 +207,7 @@ const App: React.FC = () => {
         <ul>
           {spinHistory.map((number, index) => (
             <li key={index} className={getResultColor(number)}>
-              {number} ({getResultColor(number)})
+              {number.toString().padStart(2, '0')} ({getResultColor(number)})
             </li>
           ))}
         </ul>
@@ -228,7 +228,7 @@ const App: React.FC = () => {
             {isSpinning ? (
               <CircularProgress />
             ) : lastSpinResult !== null ? (
-              `Last spin: ${lastSpinResult} (${getResultColor(lastSpinResult)})`
+              `Last spin: ${lastSpinResult.toString().padStart(2, '0')} (${getResultColor(lastSpinResult)})`
             ) : (
               ''
             )}
